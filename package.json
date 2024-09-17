@@ -1,0 +1,15 @@
+{
+  "name": "oh_f-",
+  "version": "1.0.0",
+  "description": "BAse Version",
+  "main": "index.js",
+  "scripts": {
+    "test": "Woof"
+  },
+  "repository": {
+    "type": "git",
+    "url": "Oh_F-"
+  },
+  "author": "The three musketeers",
+  "license": "ISC"
+}
