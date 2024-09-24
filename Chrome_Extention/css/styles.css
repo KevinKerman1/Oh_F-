@@ -1,25 +1,31 @@
-*{
-    margin: 0px;
-    padding: 0px;
-    box-sizing: border-box;
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  font-family: arial;
+  background-color: beige;
 }
 
-
-.content{
-    padding: 10px;
-    min-width: 300px;
+h2 {
+  text-align: center;
 }
 
-.button_cont button{
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    background: teal;
-    color: white;
-    width: 100%;
-
+.content {
+  padding: 15px;
+  min-width: 300px;
 }
 
-.button_cont button:hover{
-    box-shadow: 1px 0px 10p #eee;
+.button_cont button {
+  margin: 4px;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: teal;
+  color: white;
+  width: 100%;
+  background-image: linear-gradient(to bottom, purple, black);
+}
+
+.button_cont button:hover {
+  background-image: linear-gradient(to bottom, black, purple);
 }
