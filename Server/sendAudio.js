@@ -2,7 +2,18 @@ import fs from 'fs';
 import fetch from 'node-fetch';
 import FormData from 'form-data';
 import dotenv from 'dotenv';
+import { WebSocketServer } from 'ws';
 dotenv.config();
+const wss = new WebSocketServer({ port: 3002 }); // WebSocket server running on port 8080
+
+// Broadcast function to send messages to all connected clients
+function broadcastMessage(message) {
+    wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(message);
+        }
+    });
+}
 
 // Function to send the audio file to the OpenAI API (Whisper)
 async function sendAudioFile(audioFilePath) {
@@ -43,6 +54,12 @@ async function sendAudioFile(audioFilePath) {
         console.log('Response from API 1 (transcription):', responseData);
 
         if (responseData && responseData.text) {
+            // Send the transcription to WebSocket clients (i.e., the Chrome extension)
+            broadcastMessage(JSON.stringify({
+                action: "transcription_received",
+                transcription: responseData.text
+            }));
+
             // Call the second API with the transcription from API 1
             await sendChatCompletion(responseData.text);
         }
@@ -81,6 +98,12 @@ async function sendChatCompletion(transcriptionText) {
 
         const responseData = await response.json();
         console.log('Response from API 2 (chat completion):', responseData.choices[0].message.content);
+
+        // Send the chat completion result via WebSocket to the extension
+        broadcastMessage(JSON.stringify({
+            action: "chat_completion",
+            message: responseData.choices[0].message.content
+        }));
     } catch (error) {
         console.error('Error sending chat request to OpenAI API:', error);
     }

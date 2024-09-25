@@ -18,11 +18,9 @@ function onAccessApproved(stream) {
         let recordedBlob = event.data;
         console.log(recordedBlob.type);
 
-        // Create a FormData object to send the blob via POST request
         let formData = new FormData();
         formData.append("videoBlob", recordedBlob, "screen-recording.webm");
 
-        // Make the POST request to the provided API URL
         fetch("http://localhost:3000/api/upload", {
             method: "POST",
             body: formData,

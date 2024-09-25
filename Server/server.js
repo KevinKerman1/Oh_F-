@@ -3,17 +3,15 @@ import multer from 'multer';
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url'; // New import to get file path in ES modules
-import sendAudioFile from './sendAudio.js'; // Import the default export
+import { fileURLToPath } from 'url'; 
+import sendAudioFile from './sendAudio.js'; 
 
 const app = express();
 const port = 3000;
 
-// Create __dirname equivalent in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Configure multer for file uploads
 const upload = multer({ dest: 'uploads/' });
 
 app.use(express.json());
@@ -26,7 +24,6 @@ app.post('/api/upload', upload.single('videoBlob'), (req, res) => {
     const filePath = req.file.path;
     const outputAudioPath = path.join(__dirname, 'output', `audio_${Date.now()}.mp3`);
 
-    // Use FFmpeg to extract audio and trim it
     ffmpeg(filePath)
         .audioCodec('libmp3lame')
         .noVideo()
@@ -36,10 +33,8 @@ app.post('/api/upload', upload.single('videoBlob'), (req, res) => {
         .on('end', () => {
             console.log('Audio extracted and trimmed successfully.');
 
-            // Send the extracted audio file to another API
             sendAudioFile(outputAudioPath);
 
-            // Respond to the client
             res.json({ message: 'Audio extracted and sent to external API.', audioPath: outputAudioPath });
         })
         .on('error', (err) => {

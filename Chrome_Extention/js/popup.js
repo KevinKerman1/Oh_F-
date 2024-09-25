@@ -1,32 +1,39 @@
-document.addEventListener("DOMContentLoaded", ()=>{
-    // GET THE SELECTORS OF THE BUTTONS
-    const startVideoButton = document.querySelector("button#start_video")
-    const stopVideoButton = document.querySelector("button#stop_video")
+document.addEventListener("DOMContentLoaded", () => {
+    // WebSocket setup
+    const ws = new WebSocket('ws://localhost:8080'); // Connect to the WebSocket server
 
-    // adding event listeners
+    ws.onopen = () => {
+        console.log('WebSocket connection established');
+    };
 
-    startVideoButton.addEventListener("click", ()=>{
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-            chrome.tabs.sendMessage(tabs[0].id, {action: "request_recording"},  function(response){
-                if(!chrome.runtime.lastError){
-                    console.log(response)
-                } else{
-                    console.log(chrome.runtime.lastError, 'error line 14')
-                }
-            })
-        } )
-    })
+    ws.onmessage = (event) => {
+        const message = JSON.parse(event.data);
 
+        if (message.action === "transcription_received") {
+            displayTranscription(message.transcription);
+        } else if (message.action === "chat_completion") {
+            displayChatCompletion(message.message);
+        }
+    };
 
-    stopVideoButton.addEventListener("click", ()=>{
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-            chrome.tabs.sendMessage(tabs[0].id, {action: "stopvideo"},  function(response){
-                if(!chrome.runtime.lastError){
-                    console.log(response)
-                } else{
-                    console.log(chrome.runtime.lastError, 'error line 27')
-                }
-            })
-        } )
-    })
-})
+    ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+    };
+
+    ws.onclose = () => {
+        console.log('WebSocket connection closed');
+    };
+
+    const transcriptionText = document.querySelector("#transcription_text"); // For displaying the transcription
+    const chatCompletionText = document.querySelector("#chat_completion_text"); // For displaying the chat completion
+
+    // Function to display transcription
+    function displayTranscription(transcription) {
+        transcriptionText.textContent = transcription;
+    }
+
+    // Function to display chat completion
+    function displayChatCompletion(message) {
+        chatCompletionText.textContent = message;
+    }
+});
