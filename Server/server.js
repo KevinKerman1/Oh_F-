@@ -3,10 +3,15 @@ import multer from 'multer';
 import ffmpeg from 'fluent-ffmpeg';
 import fs from 'fs';
 import path from 'path';
-import sendAudioFile from './sendAudio.js'; // Import the second file
+import { fileURLToPath } from 'url'; // New import to get file path in ES modules
+import sendAudioFile from './sendAudio.js'; // Import the default export
 
 const app = express();
 const port = 3000;
+
+// Create __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Configure multer for file uploads
 const upload = multer({ dest: 'uploads/' });
